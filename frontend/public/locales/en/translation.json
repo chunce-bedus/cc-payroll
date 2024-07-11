@@ -1,0 +1,11 @@
+{
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "noData": "No data available",
+  "dashboard": "Dashboard",
+  "home": "Home",
+  "employees": "Employees",
+  "gradingForms": "Grading Forms",
+  "english": "English",
+  "indonesian": "Indonesian"
+}
