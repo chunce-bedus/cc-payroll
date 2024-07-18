@@ -1,23 +1,25 @@
 import React from 'react';
 import Link from 'next/link';
-import '../styles/index.css';
+import styles from '../styles/index.module.css';
 
 const HomePage = () => {
   return (
-    <div>
-      <div className="container">
-        <h1>Welcome to CC Payroll</h1>
-        <nav>
-          <ul>
-            <li>
-              <Link href="/signup">Sign Up</Link>
-            </li>
-            <li>
-              <Link href="/signin">Sign In</Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Welcome to CC Payroll</h1>
+      <nav className={styles.nav}>
+        <ul className={styles.list}>
+          <li className={styles.item}>
+            <Link href="/signup" legacyBehavior>
+              <a className={styles.link}>Sign Up</a>
+            </Link>
+          </li>
+          <li className={styles.item}>
+            <Link href="/signin" legacyBehavior>
+              <a className={styles.link}>Sign In</a>
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };
