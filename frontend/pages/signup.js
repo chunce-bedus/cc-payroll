@@ -1,9 +1,9 @@
-// frontend/pages/signup.js
-
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import axios from 'axios';
+// import Header from '../components/Header';
 import Footer from '../components/Footer';
-import styles from '../styles/forms.module.css'; // Import the CSS module
+import styles from '../styles/signup.module.css'; // Import the CSS file
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ const SignUp = () => {
     password: '',
     collectionCenter: ''
   });
+  const router = useRouter();
 
   const handleChange = (e) => {
     setFormData({
@@ -25,6 +26,8 @@ const SignUp = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/employees/signup', formData);
       console.log(response.data);
+      // Redirect to the sign-in page after a successful sign-up
+      router.push('/signin');
     } catch (error) {
       console.error(error);
     }
@@ -32,9 +35,10 @@ const SignUp = () => {
 
   return (
     <div>
+      
       <div className={styles.container}>
-        <h2 className={styles.title}>Sign Up</h2>
-        <form onSubmit={handleSubmit} className={styles.signupForm}>
+        <h2>Sign Up</h2>
+        <form onSubmit={handleSubmit} className={styles.form}>
           <label className={styles.label}>
             Name:
             <input
@@ -75,9 +79,9 @@ const SignUp = () => {
               value={formData.collectionCenter}
               onChange={handleChange}
               required
-              className={styles.select}
+              className={styles.input}
             >
-              <option value="">Select</option>
+              <option value="">Select a Center</option>
               <option value="MJM Bekenu">MJM Bekenu</option>
               <option value="MJM Beraya">MJM Beraya</option>
               <option value="MJM Karabungan">MJM Karabungan</option>
