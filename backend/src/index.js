@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet'); // Optional, for additional security
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose(); // Assuming you are using SQLite
+const { Sequelize } = require('sequelize'); // Import Sequelize
+const employeeRoutes = require('../routes/employeeRoutes'); // Adjust the path if necessary
 
 // Initialize Express app
 const app = express();
@@ -18,24 +19,35 @@ app.use(helmet()); // Add security headers (optional)
 // Static files (if needed)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// SQLite database setup
-const db = new sqlite3.Database('./payroll.db', (err) => {
-  if (err) {
-    console.error('Failed to connect to database:', err.message);
-  } else {
+// Sequelize setup
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './payroll.db'
+});
+
+// Import models
+const Employee = require('../models/employeeModel'); // Adjust the path if necessary
+
+// Sync models with the database
+sequelize.authenticate()
+  .then(() => {
     console.log('Connected to SQLite database.');
-  }
-});
+    return sequelize.sync(); // Sync all models
+  })
+  .then(() => {
+    // Define routes
+    app.use('/api/employees', employeeRoutes);
 
-// Define routes
-app.use('/api/employees', require('../routes/employeeRoutes')); 
+    // Health check route
+    app.get('/', (req, res) => {
+      res.send('Welcome to the CC Payroll backend!');
+    });
 
-// Health check route
-app.get('/', (req, res) => {
-  res.send('Welcome to the CC Payroll backend!');
-});
-
-// Start server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+    // Start server
+    app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Unable to connect to the database:', error);
+  });

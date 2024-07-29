@@ -1,6 +1,5 @@
-// models/employeeModel.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); // Adjust the path as needed
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = require('../config/database'); // Adjust the path if necessary
 
 const Employee = sequelize.define('Employee', {
   name: {
@@ -20,6 +19,8 @@ const Employee = sequelize.define('Employee', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+}, {
+  // Other model options go here
 });
 
 module.exports = Employee;

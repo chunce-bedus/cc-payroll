@@ -1,27 +1,29 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const db = require('../config/db');
+// backend/models/gradingFormModel.js
 
-const GradingForm = db.define('GradingForm', {
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+
+const GradingForm = sequelize.define('GradingForm', {
   date: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
+    type: DataTypes.DATE,
+    allowNull: false
   },
   formNumber: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
   weight: {
     type: DataTypes.FLOAT,
-    allowNull: false,
+    allowNull: false
   },
   grade: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
+    type: DataTypes.STRING,
+    allowNull: false
   },
   headcount: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-  },
+    allowNull: false
+  }
 });
 
 module.exports = GradingForm;

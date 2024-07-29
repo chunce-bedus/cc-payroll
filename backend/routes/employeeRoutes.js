@@ -1,5 +1,6 @@
 // backend/routes/employeeRoutes.js
 
+// Import necessary modules
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -64,6 +65,20 @@ router.post('/signin', async (req, res) => {
       if (err) throw err;
       res.json({ token });
     });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Fetch employee details route
+router.get('/:id', async (req, res) => {
+  try {
+    const employee = await Employee.findByPk(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ msg: 'Employee not found' });
+    }
+    res.json(employee);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');

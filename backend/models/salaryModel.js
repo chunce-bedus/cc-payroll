@@ -1,19 +1,21 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const db = require('../config/db');
+// backend/models/salaryModel.js
 
-const Salary = db.define('Salary', {
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+
+const Salary = sequelize.define('Salary', {
   employeeId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  date: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
+    allowNull: false
   },
   amount: {
     type: DataTypes.FLOAT,
-    allowNull: false,
+    allowNull: false
   },
+  date: {
+    type: DataTypes.DATE,
+    allowNull: false
+  }
 });
 
 module.exports = Salary;

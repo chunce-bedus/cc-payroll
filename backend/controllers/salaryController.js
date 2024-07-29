@@ -1,14 +1,82 @@
+// backend/controllers/salaryController.js
+
 const Salary = require('../models/salaryModel');
 
+// Get all salaries
 const getSalaries = async (req, res) => {
-  const salaries = await Salary.findAll();
-  res.json(salaries);
+  try {
+    const salaries = await Salary.findAll();
+    res.json(salaries);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
 };
 
+// Add a new salary
 const addSalary = async (req, res) => {
-  const { employeeId, date, amount } = req.body;
-  const newSalary = await Salary.create({ employeeId, date, amount });
-  res.status(201).json(newSalary);
+  const { employeeId, amount, date } = req.body;
+
+  try {
+    const newSalary = await Salary.create({
+      employeeId,
+      amount,
+      date
+    });
+
+    res.json(newSalary);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
 };
 
-module.exports = { getSalaries, addSalary };
+// Update a salary
+const updateSalary = async (req, res) => {
+  const { id } = req.params;
+  const { employeeId, amount, date } = req.body;
+
+  try {
+    let salary = await Salary.findByPk(id);
+    if (!salary) {
+      return res.status(404).json({ msg: 'Salary not found' });
+    }
+
+    salary.employeeId = employeeId;
+    salary.amount = amount;
+    salary.date = date;
+
+    await salary.save();
+
+    res.json(salary);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
+
+// Delete a salary
+const deleteSalary = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const salary = await Salary.findByPk(id);
+    if (!salary) {
+      return res.status(404).json({ msg: 'Salary not found' });
+    }
+
+    await salary.destroy();
+
+    res.json({ msg: 'Salary deleted' });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
+
+module.exports = {
+  getSalaries,
+  addSalary,
+  updateSalary,
+  deleteSalary
+};

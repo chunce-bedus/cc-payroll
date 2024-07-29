@@ -1,3 +1,4 @@
+// backend/routes/gradingFormRoutes.js
 const express = require('express');
 const { getGradingForms, addGradingForm } = require('../controllers/gradingFormController');
 const router = express.Router();
