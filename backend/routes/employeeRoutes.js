@@ -5,7 +5,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Employee = require('../models/employeeModel');
-const { getAllEmployees } = require('../controllers/employeeController');
+const { getAllEmployees, updateEmployee, deleteEmployee } = require('../controllers/employeeController');
 const router = express.Router();
 
 // Fetch all employees route
@@ -65,7 +65,7 @@ router.post('/signin', async (req, res) => {
       }
     };
 
-    jwt.sign(payload, 'secret', { expiresIn: '1h' }, (err, token) => {
+    jwt.sign(payload, 'your_jwt_secret', { expiresIn: '1h' }, (err, token) => {
       if (err) throw err;
       res.json({ token });
     });
@@ -88,5 +88,11 @@ router.get('/:id', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// Update employee details
+router.put('/:id', updateEmployee);
+
+// Delete employee route
+router.delete('/:id', deleteEmployee);
 
 module.exports = router;
