@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet'); 
 const path = require('path');
 const sequelize = require('../config/database'); // Import the configured Sequelize instance
+const gradingFormRoutes = require('../routes/gradingFormRoutes'); // Import the routes
 
 // Initialize Express app
 const app = express();
@@ -45,6 +46,7 @@ const salaryRoutes = require('../routes/salaryRoutes');
 
 // Use routes
 app.use('/api/salary', salaryRoutes);
+app.use('/api/gradingforms', gradingFormRoutes); // Use the routes
 
 // Health check route
 app.get('/', (req, res) => {
