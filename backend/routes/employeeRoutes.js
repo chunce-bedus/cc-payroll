@@ -5,7 +5,11 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Employee = require('../models/employeeModel');
+const { getAllEmployees } = require('../controllers/employeeController');
 const router = express.Router();
+
+// Fetch all employees route
+router.get('/all', getAllEmployees);
 
 // Sign-up route
 router.post('/signup', async (req, res) => {

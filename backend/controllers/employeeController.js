@@ -11,4 +11,16 @@ const addEmployee = async (req, res) => {
   res.status(201).json(newEmployee);
 };
 
-module.exports = { getEmployees, addEmployee };
+// Get all employees
+const getAllEmployees = async (req, res) => {
+  try {
+    const employees = await Employee.findAll();
+    const employeeNames = employees.map(employee => employee.name);
+    res.json(employeeNames);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
+
+module.exports = { getEmployees, addEmployee, getAllEmployees };
