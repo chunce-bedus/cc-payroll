@@ -1,6 +1,19 @@
 // backend/controllers/salaryController.js
-
 const Salary = require('../models/salaryModel');
+const { calculateSalaryAmount } = require('../utils/salaryCalculator');
+
+// Calculate salary
+const calculateSalary = (req, res) => {
+  const { grade, weight, headcount } = req.body;
+
+  try {
+    const salary = calculateSalaryAmount(grade, weight, headcount);
+    res.json({ salary });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
 
 // Get all salaries
 const getSalaries = async (req, res) => {
@@ -78,5 +91,6 @@ module.exports = {
   getSalaries,
   addSalary,
   updateSalary,
+  calculateSalary,
   deleteSalary
 };

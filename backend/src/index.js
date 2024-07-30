@@ -1,53 +1,57 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const helmet = require('helmet'); // Optional, for additional security
+const helmet = require('helmet'); 
 const path = require('path');
-const { Sequelize } = require('sequelize'); // Import Sequelize
-const employeeRoutes = require('../routes/employeeRoutes'); // Adjust the path if necessary
+const sequelize = require('../config/database'); // Import the configured Sequelize instance
 
 // Initialize Express app
 const app = express();
-const port = process.env.PORT || 5000; // Set port from environment or default to 5000
+const port = process.env.PORT || 5000; 
 
 // Middleware
-app.use(bodyParser.json()); // Parse JSON bodies
-app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use(helmet()); // Add security headers (optional)
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors()); 
+app.use(helmet());
 
 // Static files (if needed)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Sequelize setup
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './payroll.db'
-});
-
-// Import models
-const Employee = require('../models/employeeModel'); // Adjust the path if necessary
-
-// Sync models with the database
 sequelize.authenticate()
   .then(() => {
     console.log('Connected to SQLite database.');
-    return sequelize.sync(); // Sync all models
-  })
-  .then(() => {
-    // Define routes
-    app.use('/api/employees', employeeRoutes);
 
-    // Health check route
-    app.get('/', (req, res) => {
-      res.send('Welcome to the CC Payroll backend!');
-    });
+    // Sync all defined models to the DB
+    sequelize.sync()
+      .then(() => {
+        console.log('Database & tables created!');
+      })
+      .catch(err => {
+        console.error('Error syncing database:', err);
+      });
 
-    // Start server
-    app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
-    });
   })
-  .catch((error) => {
-    console.error('Unable to connect to the database:', error);
+  .catch((err) => {
+    console.error('Unable to connect to the database:', err);
   });
+
+// Define routes
+app.use('/api/employees', require('../routes/employeeRoutes')); 
+
+// Other imports
+const salaryRoutes = require('../routes/salaryRoutes');
+
+// Use routes
+app.use('/api/salary', salaryRoutes);
+
+// Health check route
+app.get('/', (req, res) => {
+  res.send('Welcome to the CC Payroll backend!');
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
