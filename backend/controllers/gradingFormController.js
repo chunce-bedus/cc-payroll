@@ -15,10 +15,11 @@ const getGradingForms = async (req, res) => {
 
 // Add a new grading form
 const addGradingForm = async (req, res) => {
-  const { date, formNumber, weight, grade, headcount } = req.body;
+  const { employeeId, date, formNumber, weight, grade, headcount } = req.body;
 
   try {
     const newGradingForm = await GradingForm.create({
+      employeeId,
       date,
       formNumber,
       weight,
@@ -36,7 +37,7 @@ const addGradingForm = async (req, res) => {
 // Update a grading form
 const updateGradingForm = async (req, res) => {
   const { id } = req.params;
-  const { date, formNumber, weight, grade, headcount } = req.body;
+  const { employeeId, date, formNumber, weight, grade, headcount } = req.body;
 
   try {
     let gradingForm = await GradingForm.findByPk(id);
@@ -44,6 +45,7 @@ const updateGradingForm = async (req, res) => {
       return res.status(404).json({ msg: 'Grading form not found' });
     }
 
+    gradingForm.employeeId = employeeId;
     gradingForm.date = date;
     gradingForm.formNumber = formNumber;
     gradingForm.weight = weight;

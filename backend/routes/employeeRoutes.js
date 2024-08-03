@@ -1,15 +1,15 @@
 // backend/routes/employeeRoutes.js
-
-// Import necessary modules
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Employee = require('../models/employeeModel');
 const { getAllEmployees, updateEmployee, deleteEmployee } = require('../controllers/employeeController');
+const { protect } = require('../middleware/authMiddleware');
+const { validateEmployeeUpdate } = require('../middleware/validationMiddleware');
 const router = express.Router();
 
 // Fetch all employees route
-router.get('/all', getAllEmployees);
+router.get('/all', protect, getAllEmployees);
 
 // Sign-up route
 router.post('/signup', async (req, res) => {
@@ -65,7 +65,7 @@ router.post('/signin', async (req, res) => {
       }
     };
 
-    jwt.sign(payload, 'your_jwt_secret', { expiresIn: '1h' }, (err, token) => {
+    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
       if (err) throw err;
       res.json({ token });
     });
@@ -76,7 +76,7 @@ router.post('/signin', async (req, res) => {
 });
 
 // Fetch employee details route
-router.get('/:id', async (req, res) => {
+router.get('/:id', protect, async (req, res) => {
   try {
     const employee = await Employee.findByPk(req.params.id);
     if (!employee) {
@@ -90,9 +90,9 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update employee details
-router.put('/:id', updateEmployee);
+router.put('/:id', protect, validateEmployeeUpdate, updateEmployee);
 
 // Delete employee route
-router.delete('/:id', deleteEmployee);
+router.delete('/:id', protect, deleteEmployee);
 
 module.exports = router;

@@ -1,3 +1,4 @@
+// backend/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 
 const protect = (req, res, next) => {
@@ -10,12 +11,12 @@ const protect = (req, res, next) => {
       req.user = decoded;
       next();
     } catch (error) {
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 

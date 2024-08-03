@@ -1,28 +1,35 @@
-// backend/models/gradingFormModel.js
-
+//gradingFormModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const GradingForm = sequelize.define('GradingForm', {
+  employeeId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'Employees', // Make sure this matches the name of the employee model
+      key: 'id',
+    },
+    allowNull: true,
+  },
   date: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: true,
   },
   formNumber: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true,
   },
   weight: {
     type: DataTypes.FLOAT,
-    allowNull: false
+    allowNull: true,
   },
   grade: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true,
   },
   headcount: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true,
   }
 });
 

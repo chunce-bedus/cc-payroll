@@ -9,6 +9,11 @@ sequelize.sync({ alter: true }).then(() => {
 });
 
 const Employee = sequelize.define('Employee', {
+  EmployeeId: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -27,7 +32,8 @@ const Employee = sequelize.define('Employee', {
     allowNull: false,
   },
 }, {
-  // Other model options go here
+  // Other options
 });
+
 
 module.exports = Employee;
