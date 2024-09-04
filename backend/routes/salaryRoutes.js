@@ -1,3 +1,4 @@
+//salaryRoutes.js
 const express = require('express');
 const { getSalaries, addSalary } = require('../controllers/salaryController');
 const router = express.Router();

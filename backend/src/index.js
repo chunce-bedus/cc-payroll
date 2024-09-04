@@ -1,9 +1,21 @@
+//index.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet'); // Optional, for additional security
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose(); // Assuming you are using SQLite
+const sequelize = require('../config/db'); // Adjusted to reflect your directory structure
+const Employee = require('../models/employeeModel');
+const GradingForm = require('../models/gradingFormModel');
+const Salary = require('../models/salaryModel');
+
+// Synchronize models with the database
+sequelize.sync({ force: false })
+  .then(() => {
+    console.log('Database & tables created!');
+  })
+  .catch(err => console.error('Error creating database tables:', err));
 
 // Initialize Express app
 const app = express();
@@ -28,7 +40,11 @@ const db = new sqlite3.Database('./payroll.db', (err) => {
 });
 
 // Define routes
+app.use(express.json());
 app.use('/api/employees', require('../routes/employeeRoutes')); 
+app.use('/api/gradingforms', require('../routes/gradingFormRoutes'));
+app.use('/api/salary', require('../routes/salaryRoutes'));
+
 
 // Health check route
 app.get('/', (req, res) => {
