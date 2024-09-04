@@ -1,15 +1,10 @@
-// frontend/pages/index.js
-
 import React from 'react';
 import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import '../styles/forms.css';
+import '../styles/index.css';
 
 const HomePage = () => {
   return (
     <div>
-      <Header />
       <div className="container">
         <h1>Welcome to CC Payroll</h1>
         <nav>
@@ -23,7 +18,6 @@ const HomePage = () => {
           </ul>
         </nav>
       </div>
-      <Footer />
     </div>
   );
 };
