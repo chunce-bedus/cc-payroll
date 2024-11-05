@@ -10,10 +10,15 @@ router.post('/', gradingFormController.addGradingForm);
 router.get('/', gradingFormController.getGradingForms);
 
 // Route to edit an existing grading form
-router.put('/:id', gradingFormController.editGradingForm);
+router.put('/:id', gradingFormController.updateGradingForm);
 
 // Route to delete a grading form
 router.delete('/:id', gradingFormController.deleteGradingForm);
+
+//Route to get grading form by Employee
+// Route to get all grading forms
+router.get('/', gradingFormController.getGradingFormsByEmployee);
+
 
 module.exports = router;
 

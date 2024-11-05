@@ -1,50 +1,61 @@
-//index.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const helmet = require('helmet'); // Optional, for additional security
+const helmet = require('helmet');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose(); // Assuming you are using SQLite
-const sequelize = require('../config/db'); // Adjusted to reflect your directory structure
+const sequelize = require('../config/db');
+
+// Import models 
 const Employee = require('../models/employeeModel');
 const GradingForm = require('../models/gradingFormModel');
 const Salary = require('../models/salaryModel');
 
-// Synchronize models with the database
-sequelize.sync({ force: false })
-  .then(() => {
-    console.log('Database & tables created!');
-  })
-  .catch(err => console.error('Error creating database tables:', err));
+// Import routes
+const employeeRoutes = require('../routes/employeeRoutes');
+const gradingFormRoutes = require('../routes/gradingFormRoutes');
+const salaryRoutes = require('../routes/salaryRoutes');
 
 // Initialize Express app
 const app = express();
-const port = process.env.PORT || 5000; // Set port from environment or default to 5000
+const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(bodyParser.json()); // Parse JSON bodies
-app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use(helmet()); // Add security headers (optional)
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(helmet());
 
 // Static files (if needed)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// SQLite database setup
-const db = new sqlite3.Database('./payroll.db', (err) => {
-  if (err) {
-    console.error('Failed to connect to database:', err.message);
-  } else {
-    console.log('Connected to SQLite database.');
-  }
-});
+// Define model associations
+Employee.hasMany(GradingForm, { foreignKey: 'employeeId', onDelete: 'CASCADE' });
+Employee.hasMany(Salary, { foreignKey: 'employeeId', onDelete: 'CASCADE' });
+GradingForm.hasMany(Salary, { foreignKey: 'gradingFormId', onDelete: 'CASCADE' });
+
+// Sequelize setup
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connected to the database.');
+
+    // Sync all defined models to the DB
+    sequelize.sync({ force: false })
+      .then(() => {
+        console.log('Database & tables created!');
+      })
+      .catch(err => {
+        console.error('Error syncing database:', err);
+      });
+
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
 // Define routes
-app.use(express.json());
-app.use('/api/employees', require('../routes/employeeRoutes')); 
-app.use('/api/gradingforms', require('../routes/gradingFormRoutes'));
-app.use('/api/salary', require('../routes/salaryRoutes'));
-
+app.use('/api/employees', employeeRoutes);
+app.use('/api/gradingforms', gradingFormRoutes);
+app.use('/api/salaries', salaryRoutes);
 
 // Health check route
 app.get('/', (req, res) => {

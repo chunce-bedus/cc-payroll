@@ -1,8 +1,13 @@
-// models/employeeModel.js
+// employeeModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
 const Employee = sequelize.define('Employee', {
+  employeeId: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -24,5 +29,11 @@ const Employee = sequelize.define('Employee', {
   timestamps: true,
 });
 
-module.exports = Employee;
+// Additional validations if needed
+Employee.beforeCreate((employee) => {
+  if (!employee.email || !employee.password) {
+    throw new Error('Email and password are required.');
+  }
+});
 
+module.exports = Employee;
