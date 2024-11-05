@@ -8,12 +8,10 @@ const sequelize = require('../config/db');
 // Import models 
 const Employee = require('../models/employeeModel');
 const GradingForm = require('../models/gradingFormModel');
-const Salary = require('../models/salaryModel');
 
 // Import routes
 const employeeRoutes = require('../routes/employeeRoutes');
 const gradingFormRoutes = require('../routes/gradingFormRoutes');
-const salaryRoutes = require('../routes/salaryRoutes');
 
 // Initialize Express app
 const app = express();
@@ -30,8 +28,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Define model associations
 Employee.hasMany(GradingForm, { foreignKey: 'employeeId', onDelete: 'CASCADE' });
-Employee.hasMany(Salary, { foreignKey: 'employeeId', onDelete: 'CASCADE' });
-GradingForm.hasMany(Salary, { foreignKey: 'gradingFormId', onDelete: 'CASCADE' });
 
 // Sequelize setup
 sequelize.authenticate()
@@ -55,7 +51,6 @@ sequelize.authenticate()
 // Define routes
 app.use('/api/employees', employeeRoutes);
 app.use('/api/gradingforms', gradingFormRoutes);
-app.use('/api/salaries', salaryRoutes);
 
 // Health check route
 app.get('/', (req, res) => {

@@ -16,14 +16,14 @@ const GradingForm = sequelize.define('GradingForm', {
   formNumber: {
     type: DataTypes.STRING,
     allowNull: false,
-	unique: true,
+    unique: true,
   },
   weight: {
     type: DataTypes.FLOAT,
     allowNull: false,
-	validate: {
-		min: 0,
-	}
+    validate: {
+      min: 0,
+    },
   },
   grade: {
     type: DataTypes.INTEGER,
@@ -32,9 +32,9 @@ const GradingForm = sequelize.define('GradingForm', {
   headcount: {
     type: DataTypes.INTEGER,
     allowNull: false,
-	validate: {
-		min: 1,
-	}
+    validate: {
+      min: 1,
+    },
   },
   employeeId: {
     type: DataTypes.INTEGER,

@@ -25,6 +25,10 @@ const Employee = sequelize.define('Employee', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  cumulativeSalary: {
+    type: DataTypes.DECIMAL(10, 2), // Adjust as necessary
+    defaultValue: 0.00,
+  },
 }, {
   timestamps: true,
 });

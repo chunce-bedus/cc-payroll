@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "node src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "migrate": "sequelize-cli db:migrate --config ./config/sequelize-config.js",
+    "migrate:undo": "sequelize-cli db:migrate:undo --config ./config/sequelize-config.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
