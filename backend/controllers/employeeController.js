@@ -37,11 +37,11 @@ const addEmployee = async (req, res) => {
 
 // Edit an employee's details
 const editEmployee = async (req, res) => {
-  const { id } = req.params;
+  const { employeeId } = req.params;  // Changed from `id` to `employeeId`
   const { name, email, password, collectionCenter } = req.body;
 
   try {
-    const employee = await Employee.findByPk(id);
+    const employee = await Employee.findByPk(employeeId);  // Changed from `id` to `employeeId`
     if (!employee) {
       return res.status(404).json({ msg: 'Employee not found' });
     }
@@ -67,10 +67,10 @@ const editEmployee = async (req, res) => {
 
 // Delete an employee
 const deleteEmployee = async (req, res) => {
-  const { id } = req.params;
+  const { employeeId } = req.params;  // Changed from `id` to `employeeId`
 
   try {
-    const employee = await Employee.findByPk(id);
+    const employee = await Employee.findByPk(employeeId);  // Changed from `id` to `employeeId`
     if (!employee) {
       return res.status(404).json({ msg: 'Employee not found' });
     }
@@ -85,3 +85,4 @@ const deleteEmployee = async (req, res) => {
 };
 
 module.exports = { getEmployees, addEmployee, editEmployee, deleteEmployee };
+

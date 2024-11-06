@@ -28,7 +28,7 @@ router.post('/signup', async (req, res) => {
     });
 
     // Generate JWT token
-    const token = jwt.sign({ id: newEmployee.EmployeeId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ employeeId: newEmployee.employeeId }, process.env.JWT_SECRET, { expiresIn: '1h' });  // Changed to `employeeId`
 
     res.status(201).json({ token });
   } catch (error) {
@@ -55,7 +55,7 @@ router.post('/signin', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: employee.EmployeeId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ employeeId: employee.employeeId }, process.env.JWT_SECRET, { expiresIn: '1h' });  // Changed to `employeeId`
 
     res.json({ token });
   } catch (error) {
@@ -71,9 +71,9 @@ router.get('/', getEmployees);
 router.post('/', addEmployee);
 
 // Edit an employee by ID
-router.put('/:id', editEmployee);
+router.put('/:employeeId', editEmployee);  // Changed `id` to `employeeId`
 
 // Delete an employee by ID
-router.delete('/:id', deleteEmployee);
+router.delete('/:employeeId', deleteEmployee);  // Changed `id` to `employeeId`
 
 module.exports = router;

@@ -1,42 +1,33 @@
 // gradingFormController.js
 const GradingForm = require('../models/gradingFormModel');
 const Employee = require('../models/employeeModel');
+const sequelize = require('../config/db');  // Make sure to adjust the path if needed
 
 // Calculate salary based on grading form details
 const calculateSalaryAmount = (grade, weight, headcount) => {
   let rate;
 
-  switch (true) {
-    case (grade >= 98):
-      rate = 10.00;
-      break;
-    case (grade === 97):
-      rate = 8.50;
-      break;
-    case (grade === 96):
-      rate = 7.50;
-      break;
-    case (grade === 95):
-      rate = 6.50;
-      break;
-    case (grade === 94):
-      rate = 6.00;
-      break;
-    case (grade === 93):
-      rate = 5.50;
-      break;
-    case (grade === 92):
-      rate = 5.00;
-      break;
-    case (grade === 91):
-      rate = 4.50;
-      break;
-    case (grade === 90):
-      rate = 4.00;
-      break;
-    default:
-      rate = 3.00;
-      break;
+  // Define rate based on grade
+  if (grade >= 98) {
+    rate = 10.00;
+  } else if (grade === 97) {
+    rate = 8.50;
+  } else if (grade === 96) {
+    rate = 7.50;
+  } else if (grade === 95) {
+    rate = 6.50;
+  } else if (grade === 94) {
+    rate = 6.00;
+  } else if (grade === 93) {
+    rate = 5.50;
+  } else if (grade === 92) {
+    rate = 5.00;
+  } else if (grade === 91) {
+    rate = 4.50;
+  } else if (grade === 90) {
+    rate = 4.00;
+  } else {
+    rate = 3.00;  // For grades below 90
   }
 
   // Calculate the salary
@@ -65,11 +56,11 @@ const addGradingForm = async (req, res) => {
     const newForm = await GradingForm.create({ date, formNumber, weight, grade, headcount, employeeId });
     
     // Calculate and store salary directly in the grading form
-    newForm.salaryAmount = calculateSalaryAmount(grade, weight, headcount); // Assuming salaryAmount is a field in GradingForm model
+    newForm.amount = calculateSalaryAmount(grade, weight, headcount); // Assuming salaryAmount is a field in GradingForm model
     await newForm.save(); // Save the new salary amount
 
     // Update cumulative salary for the employee
-    await Employee.increment('cumulativeSalary', { by: newForm.salaryAmount, where: { employeeId } });
+    await Employee.increment('cumulativeSalary', { by: newForm.amount, where: { employeeId } });
 
     res.status(201).json(newForm);
   } catch (error) {
@@ -89,8 +80,12 @@ const updateGradingForm = async (req, res) => {
       return res.status(404).json({ message: 'Grading form not found' });
     }
 
-    // Calculate old salary amount for adjustment
-    const oldAmount = gradingForm.salaryAmount;
+    const oldAmount = gradingForm.amount;  // Change salaryAmount to amount
+
+    // Validate values
+    if (isNaN(weight) || isNaN(grade) || isNaN(headcount)) {
+      return res.status(400).json({ message: 'Invalid grading form values' });
+    }
 
     // Update grading form details
     gradingForm.date = date || gradingForm.date;
@@ -99,13 +94,33 @@ const updateGradingForm = async (req, res) => {
     gradingForm.grade = grade || gradingForm.grade;
     gradingForm.headcount = headcount || gradingForm.headcount;
 
-    // Calculate new salary amount and save
-    gradingForm.salaryAmount = calculateSalaryAmount(gradingForm.grade, gradingForm.weight, gradingForm.headcount);
+    const newAmount = calculateSalaryAmount(gradingForm.grade, gradingForm.weight, gradingForm.headcount);
+
+    // Ensure valid number
+    if (isNaN(newAmount)) {
+      return res.status(400).json({ message: 'Invalid salary calculation' });
+    }
+
+    gradingForm.amount = newAmount;  // Update to 'amount' field
     await gradingForm.save();
 
-    // Update cumulative salary
-    const difference = gradingForm.salaryAmount - oldAmount; // Calculate the difference
-    await Employee.increment('cumulativeSalary', { by: difference, where: { id: gradingForm.employeeId } });
+    // Calculate the difference
+    const difference = newAmount - oldAmount;
+
+    if (isNaN(difference)) {
+      return res.status(400).json({ message: 'Salary difference is invalid' });
+    }
+
+    // Log for debugging
+    console.log('Old Amount:', oldAmount);
+    console.log('New Amount:', newAmount);
+    console.log('Difference:', difference);
+
+    // Update cumulative salary for the employee
+    await Employee.update(
+      { cumulativeSalary: sequelize.literal(`cumulativeSalary + ${difference}`) },
+      { where: { employeeId: gradingForm.employeeId } }
+    );
 
     res.json(gradingForm);
   } catch (error) {
@@ -113,7 +128,6 @@ const updateGradingForm = async (req, res) => {
     res.status(500).json({ message: 'Internal server error while editing grading form' });
   }
 };
-
 // Delete a grading form
 const deleteGradingForm = async (req, res) => {
   const { id } = req.params;
@@ -124,15 +138,27 @@ const deleteGradingForm = async (req, res) => {
       return res.status(404).json({ message: 'Grading form not found' });
     }
 
-    // Save the salary amount to adjust cumulative salary later
-    const amount = gradingForm.salaryAmount;
+    const amount = gradingForm.amount;  // Correctly getting the amount
 
     // Delete the grading form
     await gradingForm.destroy();
 
-    // Decrease cumulative salary
-    await Employee.increment('cumulativeSalary', { by: -amount, where: { id: gradingForm.employeeId } });
-    
+    // Ensure amount is a valid number before updating
+    if (isNaN(amount)) {
+      return res.status(400).json({ message: 'Invalid amount, cannot update cumulative salary' });
+    }
+
+    // Recalculate cumulative salary by summing all remaining grading form amounts for the employee
+    const gradingForms = await GradingForm.findAll({ where: { employeeId: gradingForm.employeeId } });
+
+    const newCumulativeSalary = gradingForms.reduce((total, form) => total + form.amount, 0);
+
+    // Update cumulative salary for the employee with the new total
+    await Employee.update(
+      { cumulativeSalary: newCumulativeSalary },
+      { where: { employeeId: gradingForm.employeeId } }
+    );
+
     res.json({ message: 'Grading form removed successfully' });
   } catch (error) {
     console.error('Error deleting grading form:', error);

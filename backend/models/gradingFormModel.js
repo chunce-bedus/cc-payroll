@@ -16,7 +16,6 @@ const GradingForm = sequelize.define('GradingForm', {
   formNumber: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
   weight: {
     type: DataTypes.FLOAT,
@@ -39,16 +38,28 @@ const GradingForm = sequelize.define('GradingForm', {
   employeeId: {
     type: DataTypes.INTEGER,
     references: {
-      model: Employee, // Use the model reference
-      key: 'employeeId',
+      model: Employee, // Ensure this matches the Employee model's primary key
+      key: 'employeeId',  // Make sure 'employeeId' is the correct key in the Employee model
     },
     allowNull: false,
   },
+  amount: {
+    type: DataTypes.FLOAT,
+    allowNull: true,  // amount can be nullable since it will be calculated
+  },
 }, {
   timestamps: true,
+  // Composite unique constraint ensures the formNumber is unique per employee
+  indexes: [
+    {
+      unique: true,
+      fields: ['formNumber', 'employeeId'],
+    },
+  ],
 });
 
 // Define associations
 GradingForm.belongsTo(Employee, { foreignKey: 'employeeId', onDelete: 'CASCADE' });
 
 module.exports = GradingForm;
+
